@@ -8,6 +8,8 @@ import EmployeesPage from "../EmployeesPage/EmployeesPage";
 
 import EmployeePage from "../EmployeesPage/EmployeePage";
 import StatisticsPage from "../StatisticsPage";
+import StoresPage from "../StoresPage/StoresPage";
+import StorePage from "../StoresPage/StorePage/StorePage";
 
 const DashboardPage = () => {
   return (
@@ -24,7 +26,8 @@ const DashboardPage = () => {
             <Route path='/categories' element={<CategoriesPage />} />
             <Route path='/employees/:id' element={<EmployeePage />} />
             <Route path='/employees' element={<EmployeesPage />} />
-            {/* <Route path='/inventory' element={<InventoryPage />} /> */}
+            <Route path='/stores' element={<StoresPage />} />
+            <Route path='/stores/:id' element={<StorePage />} />
             <Route path='/*' element={<Navigate to='/incomes' />} />
           </Routes>
         </div>

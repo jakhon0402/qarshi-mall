@@ -1,6 +1,7 @@
 import {
   ArrowDownIcon,
   ArrowUpIcon,
+  BuildingStorefrontIcon,
   ChartBarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -31,13 +32,13 @@ export const sidebarMenus = [
     icon: <Squares2X2Icon className='w-[21px] stroke-[1.5px]' />,
   },
   {
+    pathName: "/stores",
+    name: "Do'konlar",
+    icon: <BuildingStorefrontIcon className='w-[21px] stroke-[1.5px]' />,
+  },
+  {
     pathName: "/employees",
     name: "Xodimlar",
     icon: <UserGroupIcon className='w-[21px] stroke-[1.5px]' />,
-  },
-  {
-    pathName: "/inventory",
-    name: "Inventory",
-    icon: <WrenchScrewdriverIcon className='w-[21px] stroke-[1.5px]' />,
   },
 ];

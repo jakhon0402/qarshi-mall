@@ -42,6 +42,8 @@ const statusColorMap = {
   vacation: "warning",
 };
 const ProTable = ({
+  isSearch = true,
+  tableName = "Ma'lumot",
   createData,
   editData,
   tableData,
@@ -233,7 +235,7 @@ const ProTable = ({
             />
 
             <DeleteModal
-              contextText={user?.name}
+              contextText={user?.name ? user?.name : tableName}
               handleSubmit={() => deleteSubmitHandler(user?.id)}
             />
           </div>
@@ -293,15 +295,21 @@ const ProTable = ({
     return (
       <div className='flex flex-col gap-4'>
         <div className='flex justify-between gap-3 items-end'>
-          <Input
-            isClearable
-            className='w-full sm:max-w-[44%]'
-            placeholder="Nomi bo'yicha qidirish..."
-            startContent={<MagnifyingGlassIcon className='w-[18px]' />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
+          {isSearch ? (
+            <Input
+              isClearable
+              className='w-full sm:max-w-[44%]'
+              placeholder="Nomi bo'yicha qidirish..."
+              startContent={<MagnifyingGlassIcon className='w-[18px]' />}
+              value={filterValue}
+              onClear={() => onClear()}
+              onValueChange={onSearchChange}
+            />
+          ) : (
+            <span className='text-[18px] font-bold text-black'>
+              {tableName + "lar jadvali"}
+            </span>
+          )}
           <div className='flex gap-3 z-0'>
             {isFilterCtg && (
               <Dropdown>
@@ -361,7 +369,7 @@ const ProTable = ({
             <CreateModal
               ctgs={categories}
               handleSubmit={createSubmitHandler}
-              btnText={"Ma'lumot qo'shish"}
+              btnText={`${tableName} qo'shish`}
               fields={createData?.fields}
               validationSchema={createData?.validationSchema}
               initialValues={createData?.initialValues}
