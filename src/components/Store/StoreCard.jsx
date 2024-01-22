@@ -16,7 +16,7 @@ import { uploadImage } from "../../pages/StoresPage/storesSlice";
 import { getStoreImage } from "../../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
 
-const StoreCard = ({ store, editModal }) => {
+const StoreCard = ({ store, editModal, deleteModal }) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [image, setImage] = useState(null);
   const [isImageSelected, setIsImageSelected] = useState(false);
@@ -224,7 +224,10 @@ const StoreCard = ({ store, editModal }) => {
                     </div>
                   </div>
 
-                  {editModal(store)}
+                  <div className='flex flex-row w-full justify-between px-5 h-full items-end'>
+                    {editModal(store)}
+                    {deleteModal(store)}
+                  </div>
                 </div>
               </ModalBody>
               <ModalFooter>

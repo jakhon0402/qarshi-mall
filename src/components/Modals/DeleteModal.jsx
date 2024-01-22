@@ -13,17 +13,22 @@ import {
 } from "@nextui-org/react";
 import React from "react";
 
-const DeleteModal = ({ handleSubmit, contextText }) => {
+const DeleteModal = ({ handleSubmit, contextText, button }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <>
-      <button
-        onClick={onOpen}
-        className='text-lg text-danger cursor-pointer active:opacity-50'
-      >
-        <TrashIcon className='w-[18px]' />
-      </button>
+      {button ? (
+        React.cloneElement(button, { onClick: onOpen })
+      ) : (
+        <button
+          onClick={onOpen}
+          className='text-lg text-danger cursor-pointer active:opacity-50'
+        >
+          <TrashIcon className='w-[18px]' />
+        </button>
+      )}
+
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement='top-center'>
         <ModalContent className='text-black font-semibold'>
           {(onClose) => (

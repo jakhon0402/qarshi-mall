@@ -20,6 +20,7 @@ import CreateModal from "../../components/Modals/CreateModal";
 import { Button, Pagination } from "@nextui-org/react";
 import StoreCard from "../../components/Store/StoreCard";
 import EditModal from "../../components/Modals/EditModal";
+import DeleteModal from "../../components/Modals/DeleteModal";
 
 const StoresPage = () => {
   const itemPerPage = 20;
@@ -69,6 +70,15 @@ const StoresPage = () => {
                   <StoreCard
                     key={index}
                     store={store}
+                    deleteModal={(str) => (
+                      <DeleteModal
+                        button={<Button color='danger'>{"O'chirish"}</Button>}
+                        contextText={str?.storeNumber + " do'kon"}
+                        handleSubmit={() =>
+                          dispatch(deleteStore({ id: str?.id }))
+                        }
+                      />
+                    )}
                     editModal={(str) => (
                       <EditModal
                         button={
