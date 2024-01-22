@@ -44,23 +44,29 @@ const EditModal = ({
   validationSchema,
   handlerSubmit,
   ctgs,
+  button,
 }) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   return (
     <>
-      <button
-        onClick={onOpen}
-        className='text-lg text-default-400 cursor-pointer active:opacity-50'
-      >
-        <PencilIcon className='w-[18px]' />
-      </button>
+      {button ? (
+        React.cloneElement(button, { onClick: onOpen })
+      ) : (
+        <button
+          onClick={onOpen}
+          className='text-lg text-default-400 cursor-pointer active:opacity-50'
+        >
+          <PencilIcon className='w-[18px]' />
+        </button>
+      )}
+
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement='top-center'>
         <Formik
           enableReinitialize
-          validateOnMount={false}
-          validateOnChange={false}
-          validateOnBlur={false}
+          // validateOnMount={false}
+          // validateOnChange={false}
+          // validateOnBlur={false}
           initialValues={initialValues}
           validationSchema={validationSchema}
           // onSubmit={handleSubmit}
@@ -103,7 +109,52 @@ const EditModal = ({
                     </ModalHeader>
                     <ModalBody>
                       {fields?.map((field, index) =>
-                        field.type === "select" ? (
+                        field?.type === "customSelect" ? (
+                          <Select
+                            defaultSelectedKeys={new Set([values[field.name]])}
+                            variant='faded'
+                            isInvalid={
+                              touched[field.name] && Boolean(errors[field.name])
+                            }
+                            errorMessage={errors[field.name]}
+                            isRequired={field?.isRequired}
+                            // classNames={{
+                            //   listboxWrapper: "grid grid-cols-2 border-2 h-40 w-40",
+                            //   listbox: "w-20 col-span-2",
+                            // }}
+                            className='text-black dark:text-white w-full flex flex-row'
+                            selectionMode={"single"}
+                            // selectedKeys={values[field?.name]}
+                            // name={field?.name}
+                            // onSelectionChange={handleChange}
+                            selectedKeys={new Set([values[field?.name]])}
+                            // key={index}
+                            label={field.label}
+                            placeholder={field.placeholder}
+                            onChange={(e) => {
+                              setFieldValue(field?.name, e.target.value);
+                            }}
+                          >
+                            {field?.selectData &&
+                              field?.selectData.map((selData) => (
+                                <SelectItem
+                                  textValue={selData?.name}
+                                  variant={selData?.hexCode ? "light" : "flat"}
+                                  style={
+                                    selData?.hexCode && {
+                                      backgroundColor: selData?.hexCode,
+                                      color: "#fff",
+                                    }
+                                  }
+                                  // className='text-black dark:text-white'
+                                  key={selData?.id}
+                                  value={selData?.id}
+                                >
+                                  {selData?.name}
+                                </SelectItem>
+                              ))}
+                          </Select>
+                        ) : field.type === "select" ? (
                           <Select
                             isRequired={field?.isRequired}
                             selectionMode='single'

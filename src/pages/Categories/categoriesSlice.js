@@ -34,10 +34,43 @@ export const deleteCategory = createAsyncThunk(
   }
 );
 
+export const getAllStoreCategories = createAsyncThunk(
+  "categories/getAllStore",
+  async (body = {}) => {
+    const response = await Api.get("/categoryStore");
+    return response.data;
+  }
+);
+
+export const createStoreCategory = createAsyncThunk(
+  "categories/createStore",
+  async (body) => {
+    const response = await Api.post("/categoryStore", body);
+    return response.data;
+  }
+);
+
+export const updateStoreCategory = createAsyncThunk(
+  "categories/updateStore",
+  async (body) => {
+    const response = await Api.put(`/categoryStore/${body?.id}`, body);
+    return response.data;
+  }
+);
+
+export const deleteStoreCategory = createAsyncThunk(
+  "categories/deleteStore",
+  async (body) => {
+    const response = await Api.delete(`/categoryStore/${body?.id}`);
+    return response.data;
+  }
+);
+
 const categoriesSlice = createSlice({
   name: "categories",
   initialState: {
     categories: null,
+    storeCategories: null,
     loading: false,
     error: null,
   },
@@ -101,6 +134,62 @@ const categoriesSlice = createSlice({
         state.categories[ctgIndex] = payload;
       })
       .addCase(updateCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ GET Categories ------------------/////
+      .addCase(getAllStoreCategories.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getAllStoreCategories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.storeCategories = action.payload?.content;
+      })
+      .addCase(getAllStoreCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ CREATE Categories ------------------/////
+      .addCase(createStoreCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createStoreCategory.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.storeCategories = [...state.storeCategories, payload];
+        console.log(payload);
+      })
+      .addCase(createStoreCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ delete Categories ------------------/////
+      .addCase(deleteStoreCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteStoreCategory.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        const ctgIndex = findIndex(state.storeCategories, { id: payload?.id });
+        state.storeCategories.splice(ctgIndex, 1);
+      })
+      .addCase(deleteStoreCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ UPDATE Categories ------------------/////
+      .addCase(updateStoreCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateStoreCategory.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        const ctgIndex = findIndex(state.storeCategories, { id: payload?.id });
+        payload.itemCount = state.storeCategories[ctgIndex]?.itemCount;
+        state.storeCategories[ctgIndex] = payload;
+      })
+      .addCase(updateStoreCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

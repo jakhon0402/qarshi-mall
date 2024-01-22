@@ -2,71 +2,55 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Api from "../../config/Api";
 import { findIndex } from "lodash";
 
-export const getAllStores = createAsyncThunk(
-  "stores/getAll",
+export const getAllSaleStores = createAsyncThunk(
+  "saleStores/getAll",
   async (body = {}) => {
-    const response = await Api.get("/store");
+    const response = await Api.get("/saleStore");
     return response.data;
   }
 );
 
-export const getStoreById = createAsyncThunk(
-  "stores/getById",
+export const getSaleStoreById = createAsyncThunk(
+  "saleStores/getById",
   async (body = {}) => {
-    const response = await Api.get(`/store/${body}`);
+    const response = await Api.get(`/saleStore/${body}`);
     return response.data;
   }
 );
-export const getStorePaymentsById = createAsyncThunk(
-  "stores/getStorePaymentsById",
+export const getSaleStorePaymentsById = createAsyncThunk(
+  "saleStores/getStorePaymentsById",
   async (body = {}) => {
     const response = await Api.get(`/payment/${body}/payments`);
     return response.data;
   }
 );
 
-export const createStore = createAsyncThunk("stores/create", async (body) => {
-  const response = await Api.post("/store", body);
-  return response.data;
-});
+export const createSaleStore = createAsyncThunk(
+  "saleStores/create",
+  async (body) => {
+    const response = await Api.post("/saleStore", body);
+    return response.data;
+  }
+);
 
-export const updateStore = createAsyncThunk("stores/update", async (body) => {
-  const response = await Api.put(`/store/${body?.id}`, body);
-  return response.data;
-});
+export const updateSaleStore = createAsyncThunk(
+  "saleStores/update",
+  async (body) => {
+    const response = await Api.put(`/saleStore/${body?.id}`, body);
+    return response.data;
+  }
+);
 
-export const deleteStore = createAsyncThunk("stores/delete", async (body) => {
-  const response = await Api.delete(`/store/${body?.id}`);
-  return response.data;
-});
-
-export const uploadImage = createAsyncThunk(
-  "stores/uploadImage",
-  async (body, { rejectWithValue }) => {
-    const formData = new FormData();
-    formData.append("file", body?.file);
-    try {
-      const response = await Api.post("/fayl/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      let reqBody = { fileEntityId: response?.data?.id, ...body?.storeData };
-      const res = await Api.put(`/store/${reqBody?.id}`, reqBody);
-
-      body?.removeSelection();
-      return res.data;
-    } catch (err) {
-      if (!err.response) {
-        throw err;
-      }
-      return rejectWithValue(err.response.data);
-    }
+export const deleteSaleStore = createAsyncThunk(
+  "saleStores/delete",
+  async (body) => {
+    const response = await Api.delete(`/saleStore/${body?.id}`);
+    return response.data;
   }
 );
 
 export const createPayment = createAsyncThunk(
-  "stores/createPayment",
+  "saleStores/createPayment",
   async (body, { rejectWithValue }) => {
     try {
       const response = await Api.post(
@@ -85,7 +69,7 @@ export const createPayment = createAsyncThunk(
 );
 
 export const updatePayment = createAsyncThunk(
-  "stores/updatePayment",
+  "saleStores/updatePayment",
   async (body, { rejectWithValue }) => {
     try {
       const response = await Api.put(
@@ -103,7 +87,7 @@ export const updatePayment = createAsyncThunk(
 );
 
 export const deletePayment = createAsyncThunk(
-  "stores/deletePayment",
+  "saleStores/deletePayment",
   async (body, { rejectWithValue }) => {
     try {
       const response = await Api.delete(`/payment/${+body?.paymentId}`);
@@ -118,14 +102,13 @@ export const deletePayment = createAsyncThunk(
   }
 );
 
-const storesSlice = createSlice({
-  name: "stores",
+const saleStoresSlice = createSlice({
+  name: "saleStores",
   initialState: {
-    stores: null,
+    saleStores: null,
     storePayments: null,
-    store: null,
+    saleStore: null,
     loading: false,
-    uploadLoading: false,
     error: null,
   },
   reducers: {
@@ -136,98 +119,83 @@ const storesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       ///------------ GET stores ------------------/////
-      .addCase(getAllStores.pending, (state) => {
+      .addCase(getAllSaleStores.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getAllStores.fulfilled, (state, action) => {
+      .addCase(getAllSaleStores.fulfilled, (state, action) => {
         state.loading = false;
-        state.stores = action.payload?.content;
+        state.saleStores = action.payload?.content;
       })
-      .addCase(getAllStores.rejected, (state, action) => {
+      .addCase(getAllSaleStores.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       ///------------ GET stores ------------------/////
-      .addCase(getStorePaymentsById.pending, (state) => {
+      .addCase(getSaleStorePaymentsById.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getStorePaymentsById.fulfilled, (state, action) => {
+      .addCase(getSaleStorePaymentsById.fulfilled, (state, action) => {
         state.loading = false;
         state.storePayments = action.payload;
       })
-      .addCase(getStorePaymentsById.rejected, (state, action) => {
+      .addCase(getSaleStorePaymentsById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       ///------------ GET stores ------------------/////
-      .addCase(getStoreById.pending, (state) => {
+      .addCase(getSaleStoreById.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getStoreById.fulfilled, (state, action) => {
+      .addCase(getSaleStoreById.fulfilled, (state, action) => {
         state.loading = false;
-        state.store = action.payload;
+        state.saleStore = action.payload;
       })
-      .addCase(getStoreById.rejected, (state, action) => {
+      .addCase(getSaleStoreById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       ///------------ CREATE stores ------------------/////
-      .addCase(createStore.pending, (state) => {
+      .addCase(createSaleStore.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createStore.fulfilled, (state, { payload }) => {
+      .addCase(createSaleStore.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.stores = [...state.stores, payload];
+        state.saleStores = [...state.saleStores, payload];
       })
-      .addCase(createStore.rejected, (state, action) => {
+      .addCase(createSaleStore.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      ///------------ delete stores ------------------/////
-      .addCase(deleteStore.pending, (state) => {
+      ///------------ delete saleStores ------------------/////
+      .addCase(deleteSaleStore.pending, (state) => {
         state.loading = true;
       })
-      .addCase(deleteStore.fulfilled, (state, { payload }) => {
+      .addCase(deleteSaleStore.fulfilled, (state, { payload }) => {
         state.loading = false;
-        const ctgIndex = findIndex(state.stores, { id: payload?.id });
-        state.stores.splice(ctgIndex, 1);
+        const ctgIndex = findIndex(state.saleStores, { id: payload?.id });
+        state.saleStores.splice(ctgIndex, 1);
       })
-      .addCase(deleteStore.rejected, (state, action) => {
+      .addCase(deleteSaleStore.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      ///------------ UPDATE stores ------------------/////
-      .addCase(updateStore.pending, (state) => {
+      ///------------ UPDATE saleStores ------------------/////
+      .addCase(updateSaleStore.pending, (state) => {
         state.loading = true;
       })
-      .addCase(updateStore.fulfilled, (state, { payload }) => {
+      .addCase(updateSaleStore.fulfilled, (state, { payload }) => {
         state.loading = false;
-        const ctgIndex = findIndex(state.stores, { id: payload?.id });
-        payload.itemCount = state.stores[ctgIndex]?.itemCount;
-        state.stores[ctgIndex] = payload;
+        const ctgIndex = findIndex(state.saleStores, { id: payload?.id });
+        payload.itemCount = state.saleStores[ctgIndex]?.itemCount;
+        state.saleStores[ctgIndex] = payload;
       })
-      .addCase(updateStore.rejected, (state, action) => {
+      .addCase(updateSaleStore.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
-      })
-
-      ///------------ UPDATE stores ------------------/////
-      .addCase(uploadImage.pending, (state) => {
-        state.uploadLoading = true;
-      })
-      .addCase(uploadImage.fulfilled, (state, { payload }) => {
-        state.uploadLoading = false;
-        const ctgIndex = findIndex(state.stores, { id: payload?.id });
-        payload.itemCount = state.stores[ctgIndex]?.itemCount;
-        state.stores[ctgIndex] = payload;
-      })
-      .addCase(uploadImage.rejected, (state, action) => {
-        state.uploadLoading = false;
         state.error = action.payload;
       })
 
@@ -274,6 +242,6 @@ const storesSlice = createSlice({
   },
 });
 
-export const { resetError } = storesSlice.actions;
+export const { resetError } = saleStoresSlice.actions;
 
-export default storesSlice.reducer;
+export default saleStoresSlice.reducer;

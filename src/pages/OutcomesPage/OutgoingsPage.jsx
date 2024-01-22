@@ -89,7 +89,11 @@ const OutgoingsPage = () => {
               initialValues: emptyValues,
               validationSchema,
             }}
-            editData={{ fields, initialValues: emptyValues, validationSchema }}
+            editData={{
+              fields,
+              initialValues: (data) => data,
+              validationSchema,
+            }}
           />
         )}
       </div>

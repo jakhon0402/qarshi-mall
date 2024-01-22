@@ -1,49 +1,57 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import date from "date-and-time";
+import { BanknotesIcon } from "@heroicons/react/24/outline";
+import ProTable from "../../../components/ProTable";
+import { CurrencyDollarIcon } from "@heroicons/react/24/solid";
+import { Chip, Divider } from "@nextui-org/react";
+import { getMoneyPattern } from "../../../utils/regex";
 import {
+  getRentStoreById,
+  getRentStorePaymentsById,
   createPayment,
   deletePayment,
-  getStoreById,
-  getStorePaymentsById,
   updatePayment,
-} from "../storesSlice";
-import { Divider } from "@nextui-org/react";
-import { CurrencyDollarIcon, BanknotesIcon } from "@heroicons/react/24/solid";
-import { getMoneyPattern } from "../../../utils/regex";
-import ProTable from "../../../components/ProTable";
+} from "../rentStoreSlice";
 import {
   INITIAL_VISIBLE_COLUMNS,
   columns,
-  fields,
-  validationSchema,
   emptyValues,
+  fields,
   searchIndexes,
+  validationSchema,
 } from "./data";
 
-const StorePage = () => {
+const RentStorePage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { store, storePayments } = useSelector((state) => state.stores);
+
+  const { rentStore, rentPayments } = useSelector((state) => state.rentStores);
 
   useEffect(() => {
-    dispatch(getStoreById(id));
-    dispatch(getStorePaymentsById(id));
+    dispatch(getRentStoreById(id));
+    dispatch(getRentStorePaymentsById(id));
   }, []);
 
   return (
     <div className='flex flex-col w-full p-5 gap-5'>
       <div className='grid grid-cols-2 gap-8 w-full'>
         <div className='flex flex-col w-full p-5 bg-white rounded-xl h-fit'>
-          <span className='text-[16px] text-black font-semibold'>
-            {"Do'kon ma'lumotlari"}
-          </span>
+          <div className='flex flex-row justify-between'>
+            <span className='text-[16px] text-black font-semibold'>
+              {"Do'kon ma'lumotlari"}
+            </span>
+            <Chip variant='flat' color='warning' className='font-bold'>
+              {"ARENDA"}
+            </Chip>
+          </div>
           <div className='flex flex-row justify-between mt-5'>
             <span className='text-[14px] text-neutral-600 font-semibold'>
               {"F.I.Sh"}
             </span>
             <span className='text-[14px] text-black font-semibold'>
-              {store?.fullName}
+              {rentStore?.store?.fullName}
             </span>
           </div>
           <Divider className='my-2' />
@@ -52,7 +60,7 @@ const StorePage = () => {
               {"Do'kon raqami"}
             </span>
             <span className='text-[14px] text-black font-semibold'>
-              {store?.storeNumber}
+              {rentStore?.store?.storeNumber}
             </span>
           </div>
           <Divider className='my-2' />
@@ -61,7 +69,7 @@ const StorePage = () => {
               {"Shartnoma raqami"}
             </span>
             <span className='text-[14px] text-black font-semibold'>
-              {store?.contractNumber}
+              {rentStore?.store?.contractNumber}
             </span>
           </div>
           <Divider className='my-2' />
@@ -70,31 +78,31 @@ const StorePage = () => {
               {"Do'kon o'lchami"}
             </span>
             <span className='text-[14px] text-black font-semibold'>
-              {`${store?.size} m²`}
+              {`${rentStore?.store?.size} m²`}
             </span>
           </div>
         </div>
 
         <div className='grid grid-cols-2 w-full gap-3'>
-          <div className='flex flex-col gap-1 w-full bg-white rounded-2xl p-5 h-fit'>
+          <div className='flex flex-col col-span-2 gap-1 w-full bg-white rounded-2xl p-5 h-fit'>
             <CurrencyDollarIcon className='w-[28px] text-primary mb-1' />
             <span className='text-[14px] text-neutral-500 font-semibold'>
-              {"To'lov qiymati"}
+              {"Arenda to'lov qiymati"}
             </span>
             <span className='text-[16px] text-black font-bold mb-1'>
-              {`${getMoneyPattern(store?.fullAmount, ",")} UZS`}
+              {`${getMoneyPattern(rentStore?.rentingAmount, ",")} UZS`}
             </span>
           </div>
 
-          <div className='flex flex-col gap-1 w-full bg-white rounded-2xl p-5 h-fit'>
+          {/* <div className='flex flex-col gap-1 w-full bg-white rounded-2xl p-5 h-fit'>
             <BanknotesIcon className='w-[28px] text-orange-500 mb-1' />
             <span className='text-[14px] text-neutral-500 font-semibold'>
               {"Boshlang'ich to'lov"}
             </span>
             <span className='text-[16px] text-black font-bold mb-1'>
-              {`${getMoneyPattern(store?.initialPayment, ",")} UZS`}
+              {`${getMoneyPattern(rentStore?.initialPayment, ",")} UZS`}
             </span>
-          </div>
+          </div> */}
           <div className='flex flex-col gap-1 w-full bg-white rounded-2xl p-5 h-fit'>
             <BanknotesIcon className='w-[28px] text-green-500 mb-1' />
             <span className='text-[14px] text-neutral-500 font-semibold'>
@@ -102,9 +110,7 @@ const StorePage = () => {
             </span>
             <span className='text-[16px] text-black font-bold mb-1'>
               {`${getMoneyPattern(
-                storePayments?.reduce((accumulator, currentValue) => {
-                  return accumulator + currentValue?.newPayment;
-                }, 0),
+                rentPayments?.reduce((acc, entry) => acc + entry.paidAmount, 0),
                 ","
               )} UZS`}
             </span>
@@ -112,15 +118,15 @@ const StorePage = () => {
           <div className='flex flex-col gap-1 w-full bg-white rounded-2xl p-5 h-fit'>
             <BanknotesIcon className='w-[28px] text-pink-500 mb-1' />
             <span className='text-[14px] text-neutral-500 font-semibold'>
-              {"Qoldiq summa"}
+              {"Qarzdorlik"}
             </span>
             <span className='text-[16px] text-black font-bold mb-1'>
               {`${getMoneyPattern(
-                store?.fullAmount -
-                  store?.initialPayment -
-                  storePayments?.reduce((accumulator, currentValue) => {
-                    return accumulator + currentValue?.newPayment;
-                  }, 0),
+                rentPayments?.reduce(
+                  (acc, entry) =>
+                    acc + (entry.paymentAmount - entry.paidAmount),
+                  0
+                ),
                 ","
               )} UZS`}
             </span>
@@ -129,21 +135,36 @@ const StorePage = () => {
       </div>
 
       <div className='flex flex-col w-full bg-white p-5 rounded-2xl'>
-        {storePayments && (
+        {rentPayments && (
           <ProTable
             searchIndexes={searchIndexes}
             isSearch={false}
-            tableName="To'lov"
+            tableName="Oylik to'lov"
             //   viewButtonUrl='/stores'
             createSubmitHandler={(reqBody) =>
-              dispatch(createPayment({ data: reqBody, id }))
+              dispatch(
+                createPayment({
+                  data: {
+                    fromDate: new Date(reqBody?.fromDate),
+                    toDate: new Date(reqBody?.toDate),
+                    rentStoreId: +id,
+                    status: "PROCESS",
+                    ...reqBody,
+                  },
+                })
+              )
             }
             editSubmitHandler={(reqBody) =>
               dispatch(
                 updatePayment({
-                  storeId: id,
-                  paymentId: reqBody?.id,
-                  data: reqBody,
+                  id: reqBody?.id,
+                  data: {
+                    fromDate: new Date(reqBody?.fromDate),
+                    toDate: new Date(reqBody?.toDate),
+                    rentStoreId: +id,
+                    status: "PROCESS",
+                    ...reqBody,
+                  },
                 })
               )
             }
@@ -152,13 +173,21 @@ const StorePage = () => {
             }
             columns={columns}
             initialVisibleColumns={INITIAL_VISIBLE_COLUMNS}
-            tableData={storePayments}
+            tableData={rentPayments}
             createData={{
-              fields,
+              fields: fields,
               initialValues: emptyValues,
+              validationSchema: validationSchema,
+            }}
+            editData={{
+              fields,
+              initialValues: (data) => ({
+                ...data,
+                fromDate: date.format(new Date(data?.fromDate), "YYYY-MM-DD"),
+                toDate: date.format(new Date(data?.toDate), "YYYY-MM-DD"),
+              }),
               validationSchema,
             }}
-            editData={{ fields, initialValues: emptyValues, validationSchema }}
           />
         )}
       </div>
@@ -166,4 +195,4 @@ const StorePage = () => {
   );
 };
 
-export default StorePage;
+export default RentStorePage;

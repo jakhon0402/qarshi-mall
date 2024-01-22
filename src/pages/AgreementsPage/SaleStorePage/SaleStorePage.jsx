@@ -4,46 +4,53 @@ import { useParams } from "react-router-dom";
 import {
   createPayment,
   deletePayment,
-  getStoreById,
-  getStorePaymentsById,
+  getSaleStoreById,
+  getSaleStorePaymentsById,
   updatePayment,
-} from "../storesSlice";
-import { Divider } from "@nextui-org/react";
-import { CurrencyDollarIcon, BanknotesIcon } from "@heroicons/react/24/solid";
-import { getMoneyPattern } from "../../../utils/regex";
-import ProTable from "../../../components/ProTable";
+} from "../saleStoresSlice";
 import {
   INITIAL_VISIBLE_COLUMNS,
   columns,
-  fields,
-  validationSchema,
   emptyValues,
+  fields,
   searchIndexes,
+  validationSchema,
 } from "./data";
+import { BanknotesIcon } from "@heroicons/react/24/outline";
+import ProTable from "../../../components/ProTable";
+import { CurrencyDollarIcon } from "@heroicons/react/24/solid";
+import { Chip, Divider } from "@nextui-org/react";
+import { getMoneyPattern } from "../../../utils/regex";
 
-const StorePage = () => {
+const SaleStorePage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { store, storePayments } = useSelector((state) => state.stores);
+
+  const { saleStore, storePayments } = useSelector((state) => state.saleStores);
 
   useEffect(() => {
-    dispatch(getStoreById(id));
-    dispatch(getStorePaymentsById(id));
+    dispatch(getSaleStoreById(id));
+    dispatch(getSaleStorePaymentsById(id));
   }, []);
 
   return (
     <div className='flex flex-col w-full p-5 gap-5'>
       <div className='grid grid-cols-2 gap-8 w-full'>
         <div className='flex flex-col w-full p-5 bg-white rounded-xl h-fit'>
-          <span className='text-[16px] text-black font-semibold'>
-            {"Do'kon ma'lumotlari"}
-          </span>
+          <div className='flex flex-row justify-between'>
+            <span className='text-[16px] text-black font-semibold'>
+              {"Do'kon ma'lumotlari"}
+            </span>
+            <Chip variant='flat' color='secondary' className='font-bold'>
+              {"SOTUV"}
+            </Chip>
+          </div>
           <div className='flex flex-row justify-between mt-5'>
             <span className='text-[14px] text-neutral-600 font-semibold'>
               {"F.I.Sh"}
             </span>
             <span className='text-[14px] text-black font-semibold'>
-              {store?.fullName}
+              {saleStore?.store?.fullName}
             </span>
           </div>
           <Divider className='my-2' />
@@ -52,7 +59,7 @@ const StorePage = () => {
               {"Do'kon raqami"}
             </span>
             <span className='text-[14px] text-black font-semibold'>
-              {store?.storeNumber}
+              {saleStore?.store?.storeNumber}
             </span>
           </div>
           <Divider className='my-2' />
@@ -61,7 +68,7 @@ const StorePage = () => {
               {"Shartnoma raqami"}
             </span>
             <span className='text-[14px] text-black font-semibold'>
-              {store?.contractNumber}
+              {saleStore?.store?.contractNumber}
             </span>
           </div>
           <Divider className='my-2' />
@@ -70,7 +77,7 @@ const StorePage = () => {
               {"Do'kon o'lchami"}
             </span>
             <span className='text-[14px] text-black font-semibold'>
-              {`${store?.size} m²`}
+              {`${saleStore?.store?.size} m²`}
             </span>
           </div>
         </div>
@@ -82,7 +89,7 @@ const StorePage = () => {
               {"To'lov qiymati"}
             </span>
             <span className='text-[16px] text-black font-bold mb-1'>
-              {`${getMoneyPattern(store?.fullAmount, ",")} UZS`}
+              {`${getMoneyPattern(saleStore?.fullAmount, ",")} UZS`}
             </span>
           </div>
 
@@ -92,7 +99,7 @@ const StorePage = () => {
               {"Boshlang'ich to'lov"}
             </span>
             <span className='text-[16px] text-black font-bold mb-1'>
-              {`${getMoneyPattern(store?.initialPayment, ",")} UZS`}
+              {`${getMoneyPattern(saleStore?.initialPayment, ",")} UZS`}
             </span>
           </div>
           <div className='flex flex-col gap-1 w-full bg-white rounded-2xl p-5 h-fit'>
@@ -116,8 +123,8 @@ const StorePage = () => {
             </span>
             <span className='text-[16px] text-black font-bold mb-1'>
               {`${getMoneyPattern(
-                store?.fullAmount -
-                  store?.initialPayment -
+                saleStore?.fullAmount -
+                  saleStore?.initialPayment -
                   storePayments?.reduce((accumulator, currentValue) => {
                     return accumulator + currentValue?.newPayment;
                   }, 0),
@@ -154,11 +161,15 @@ const StorePage = () => {
             initialVisibleColumns={INITIAL_VISIBLE_COLUMNS}
             tableData={storePayments}
             createData={{
-              fields,
+              fields: fields,
               initialValues: emptyValues,
+              validationSchema: validationSchema,
+            }}
+            editData={{
+              fields,
+              initialValues: (data) => data,
               validationSchema,
             }}
-            editData={{ fields, initialValues: emptyValues, validationSchema }}
           />
         )}
       </div>
@@ -166,4 +177,4 @@ const StorePage = () => {
   );
 };
 
-export default StorePage;
+export default SaleStorePage;

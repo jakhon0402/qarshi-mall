@@ -5,6 +5,7 @@ import {
   ChartBarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ClipboardDocumentListIcon,
   Squares2X2Icon,
   UserGroupIcon,
   WrenchScrewdriverIcon,
@@ -35,6 +36,11 @@ export const sidebarMenus = [
     pathName: "/stores",
     name: "Do'konlar",
     icon: <BuildingStorefrontIcon className='w-[21px] stroke-[1.5px]' />,
+  },
+  {
+    pathName: "/agreements",
+    name: "Kelishuvlar",
+    icon: <ClipboardDocumentListIcon className='w-[21px] stroke-[1.5px]' />,
   },
   {
     pathName: "/employees",

@@ -17,8 +17,8 @@ import {
   User,
   Pagination,
   Select,
+  CircularProgress,
 } from "@nextui-org/react";
-
 import { capitalize } from "../utils/utils";
 import {
   ChevronDownIcon,
@@ -35,6 +35,7 @@ import DeleteModal from "./Modals/DeleteModal";
 import { useSelector } from "react-redux";
 import { getMoneyPattern } from "../utils/regex";
 import { useLocation, useNavigate } from "react-router-dom";
+import * as JsSearch from "js-search";
 
 const statusColorMap = {
   active: "success",
@@ -54,6 +55,7 @@ const ProTable = ({
   editSubmitHandler,
   deleteSubmitHandler,
   viewButtonUrl,
+  searchIndexes = ["name"],
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -86,25 +88,23 @@ const ProTable = ({
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...tableData];
-
+    let filteredDatas = [...tableData];
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-    if (
-      statusFilter !== "all" &&
-      Array.from(statusFilter).length !== categories.length
-    ) {
-      console.log(Array.from(statusFilter));
-      console.log(filteredUsers);
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.category.id + "")
-      );
-    }
+      var search = new JsSearch.Search("id");
 
-    return filteredUsers;
+      search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy();
+      search.searchIndex = new JsSearch.UnorderedSearchIndex();
+      JsSearch.StopWordsMap.bob = true;
+
+      searchIndexes.map((element) => {
+        search.addIndex(element);
+      });
+
+      search.addDocuments([...tableData]);
+
+      filteredDatas = search.search(filterValue);
+    }
+    return filteredDatas;
   }, [tableData, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
@@ -127,7 +127,15 @@ const ProTable = ({
   }, [sortDescriptor, items]);
 
   const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+    let cellValue = user[columnKey];
+    if (columnKey.includes(".")) {
+      let arr = columnKey.split(".");
+
+      cellValue = user;
+      arr.forEach((el) => {
+        cellValue = cellValue[el];
+      });
+    }
 
     switch (columnKey) {
       case "name":
@@ -171,18 +179,110 @@ const ProTable = ({
         );
 
       case "currentSalary":
+      case "fullAmount":
+      case "initialPayment":
+      case "newPayment":
         return (
           <div className='flex flex-col'>
             <span className='font-bold'>{`${
-              cellValue ? getMoneyPattern(cellValue) : ""
+              cellValue ? getMoneyPattern(cellValue) : "0"
             } so'm`}</span>
           </div>
         );
+
+      case "paymentAmount":
+      case "paidAmount":
+        return (
+          <div className='flex flex-col font-space'>
+            <span
+              style={{
+                opacity:
+                  columnKey == "debtAmount" && user.status === "PAID" ? 0.5 : 1,
+              }}
+              className={
+                columnKey === "paidAmount"
+                  ? "font-semibold text-green-500"
+                  : columnKey === "debtAmount"
+                  ? "font-semibold text-red-500"
+                  : "font-semibold"
+              }
+            >{`${
+              cellValue || cellValue == 0 ? getMoneyPattern(cellValue) : "0"
+            } so'm`}</span>
+          </div>
+        );
+
+      case "debtAmount":
+        return (
+          <div className='flex flex-col font-space'>
+            <span
+              style={{
+                opacity: user?.paymentAmount - user?.paidAmount == 0 ? 0.5 : 1,
+              }}
+              className={"font-semibold text-red-500"}
+            >{`${
+              user?.paymentAmount - user?.paidAmount ||
+              user?.paymentAmount - user?.paidAmount == 0
+                ? getMoneyPattern(user?.paymentAmount - user?.paidAmount)
+                : "0"
+            } so'm`}</span>
+          </div>
+        );
+
+      case "paymentStatus":
+        return (
+          <Chip
+            size='sm'
+            variant='flat'
+            color={
+              user?.paymentAmount - user?.paidAmount == 0
+                ? "success"
+                : new Date() > new Date(user?.toDate)
+                ? "danger"
+                : "warning"
+            }
+          >
+            {user?.paymentAmount - user?.paidAmount == 0
+              ? "PAID"
+              : new Date() > new Date(user?.toDate)
+              ? "UNPAID"
+              : "PROCESS"}
+          </Chip>
+        );
+
+      case "paymentProgress":
+        return (
+          <CircularProgress
+            size='lg'
+            value={(user?.paidAmount / user?.paymentAmount) * 100}
+            color={(() => {
+              let prog = (user?.paidAmount / user?.paymentAmount) * 100;
+              return prog < 30 ? "danger" : prog < 60 ? "warning" : "success";
+            })()}
+            // formatOptions={{ style: "unit", unit: "kilometer" }}
+            showValueLabel={true}
+          />
+        );
+
       case "createdAt": {
         return (
           <div className='flex flex-col'>
             <p className='text-bold text-small capitalize'>
-              {date.format(new Date(cellValue), "ddd, MMM DD YYYY HH:mm")}
+              {date.format(
+                new Date(cellValue * 1000),
+                "ddd, MMM DD YYYY HH:mm"
+              )}
+            </p>
+          </div>
+        );
+      }
+
+      case "toDate":
+      case "fromDate": {
+        return (
+          <div className='flex flex-col items-center w-fit'>
+            <p className='text-bold capitalize text-[12px]'>
+              {date.format(new Date(cellValue), "ddd, MMM DD YYYY")}
             </p>
           </div>
         );
@@ -222,15 +322,16 @@ const ProTable = ({
               fields={editData?.fields}
               validationSchema={editData?.validationSchema}
               initialValues={
-                location.pathname.startsWith("/inventory")
-                  ? {
-                      fileEntityId: user?.fileEntity?.id,
-                      name: user?.name,
-                      price: user?.price,
-                      count: user?.count,
-                      description: user?.description,
-                    }
-                  : user
+                editData?.initialValues(user)
+                // location.pathname.startsWith("/inventory")
+                //   ? {
+                //       fileEntityId: user?.fileEntity?.id,
+                //       name: user?.name,
+                //       price: user?.price,
+                //       count: user?.count,
+                //       description: user?.description,
+                //     }
+                //   : user
               }
             />
 
@@ -299,7 +400,7 @@ const ProTable = ({
             <Input
               isClearable
               className='w-full sm:max-w-[44%]'
-              placeholder="Nomi bo'yicha qidirish..."
+              placeholder='Qidirish...'
               startContent={<MagnifyingGlassIcon className='w-[18px]' />}
               value={filterValue}
               onClear={() => onClear()}

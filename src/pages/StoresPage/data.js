@@ -15,20 +15,7 @@ export const fields = [
     placeholder: "F.I.Sh ni kiriting...",
     isRequired: true,
   },
-  {
-    name: "fullAmount",
-    type: "number",
-    label: "To'lov qiymati",
-    placeholder: "To'lov qiymatini kiriting...",
-    isRequired: true,
-  },
-  {
-    name: "initialPayment",
-    type: "number",
-    label: "Boshlang'ich to'lov qiymati",
-    placeholder: "Boshlang'ich to'lov qiymatini kiriting...",
-    isRequired: true,
-  },
+
   {
     name: "storeNumber",
     type: "number",
@@ -44,6 +31,13 @@ export const fields = [
     isRequired: true,
   },
   {
+    name: "categoryStoreId",
+    type: "customSelect",
+    label: "Kategoriyasi",
+    placeholder: "Kategoriyasini tanlang...",
+    isRequired: true,
+  },
+  {
     name: "contractNumber",
     type: "number",
     label: "Shartnoma raqami",
@@ -54,16 +48,14 @@ export const fields = [
 
 export const emptyValues = {
   fullName: "",
-  fullAmount: "",
-  initialPayment: "",
+  categoryStoreId: "",
   storeNumber: "",
   contractNumber: "",
 };
 
 export const validationSchema = Yup.object().shape({
   fullName: Yup.string().required("Bo'sh bo'lmasligi kerak!"),
-  fullAmount: Yup.number().required("Bo'sh bo'lmasligi kerak!"),
-  initialPayment: Yup.number().required("Bo'sh bo'lmasligi kerak!"),
+  categoryStoreId: Yup.mixed().required("Bo'sh bo'lmasligi kerak!"),
   storeNumber: Yup.number().required("Bo'sh bo'lmasligi kerak!"),
   contractNumber: Yup.number().required("Bo'sh bo'lmasligi kerak!"),
 });
@@ -73,12 +65,12 @@ export const columns = [
   { name: "F.I.Sh", uid: "fullName", sortable: true },
   { name: "Do'kon raqami", uid: "storeNumber", sortable: true },
   { name: "Shartnoma raqami", uid: "contractNumber", sortable: true },
-  { name: "To'lov qiymati", uid: "fullAmount", sortable: true },
-  {
-    name: "Boshlang'ich to'lov qiymati",
-    uid: "initialPayment",
-    sortable: true,
-  },
+  // { name: "To'lov qiymati", uid: "fullAmount", sortable: true },
+  // {
+  //   name: "Boshlang'ich to'lov qiymati",
+  //   uid: "initialPayment",
+  //   sortable: true,
+  // },
   { name: "SANASI", uid: "createdAt" },
   // { name: "STATUS", uid: "status", sortable: true },
   { name: "ACTIONS", uid: "actions" },
@@ -89,8 +81,16 @@ export const INITIAL_VISIBLE_COLUMNS = [
   "fullName",
   "storeNumber",
   "contractNumber",
-  "fullAmount",
-  "initialPayment",
+  // "fullAmount",
+  // "initialPayment",
   "createdAt",
   "actions",
+];
+
+export const searchIndexes = [
+  "fullName",
+  "storeNumber",
+  "contractNumber",
+  "fullAmount",
+  "initialPayment",
 ];

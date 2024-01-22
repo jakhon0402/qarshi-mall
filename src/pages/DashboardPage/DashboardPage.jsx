@@ -10,6 +10,9 @@ import EmployeePage from "../EmployeesPage/EmployeePage";
 import StatisticsPage from "../StatisticsPage";
 import StoresPage from "../StoresPage/StoresPage";
 import StorePage from "../StoresPage/StorePage/StorePage";
+import AgreementsPage from "../AgreementsPage/AgreementsPage";
+import RentStorePage from "../AgreementsPage/RentStorePage/RentStorePage";
+import SaleStorePage from "../AgreementsPage/SaleStorePage/SaleStorePage";
 
 const DashboardPage = () => {
   return (
@@ -28,6 +31,9 @@ const DashboardPage = () => {
             <Route path='/employees' element={<EmployeesPage />} />
             <Route path='/stores' element={<StoresPage />} />
             <Route path='/stores/:id' element={<StorePage />} />
+            <Route path='/agreements' element={<AgreementsPage />} />
+            <Route path='/agreements/rent/:id' element={<RentStorePage />} />
+            <Route path='/agreements/sale/:id' element={<SaleStorePage />} />
             <Route path='/*' element={<Navigate to='/incomes' />} />
           </Routes>
         </div>

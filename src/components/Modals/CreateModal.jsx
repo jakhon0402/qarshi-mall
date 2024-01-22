@@ -84,6 +84,12 @@ const CreateModal = ({
                   values["categoryId"] = +[...values["categoryId"]][0];
                 }
 
+                if ("categoryStoreId" in values) {
+                  values["categoryStoreId"] = +[
+                    ...values["categoryStoreId"],
+                  ][0];
+                }
+
                 if ("imageFile" in values) {
                   let attachmentId = await handleUpload(values["imageFile"]);
 
@@ -119,7 +125,52 @@ const CreateModal = ({
                     </ModalHeader>
                     <ModalBody>
                       {fields?.map((field, index) =>
-                        field.type === "select" ? (
+                        field?.type === "customSelect" ? (
+                          <Select
+                            defaultSelectedKeys={new Set([values[field.name]])}
+                            variant='faded'
+                            isInvalid={
+                              touched[field.name] && Boolean(errors[field.name])
+                            }
+                            errorMessage={errors[field.name]}
+                            isRequired={field?.isRequired}
+                            // classNames={{
+                            //   listboxWrapper: "grid grid-cols-2 border-2 h-40 w-40",
+                            //   listbox: "w-20 col-span-2",
+                            // }}
+                            className='text-black dark:text-white w-full flex flex-row'
+                            selectionMode={field?.selectionMode}
+                            // selectedKeys={values[field?.name]}
+                            // name={field?.name}
+                            // onSelectionChange={handleChange}
+                            selectedKeys={new Set([values[field?.name]])}
+                            key={index}
+                            label={field.label}
+                            placeholder={field.placeholder}
+                            onChange={(e) => {
+                              setFieldValue(field?.name, e.target.value);
+                            }}
+                          >
+                            {field?.selectData &&
+                              field?.selectData.map((selData) => (
+                                <SelectItem
+                                  textValue={selData?.name}
+                                  variant={selData?.hexCode ? "light" : "flat"}
+                                  style={
+                                    selData?.hexCode && {
+                                      backgroundColor: selData?.hexCode,
+                                      color: "#fff",
+                                    }
+                                  }
+                                  // className='text-black dark:text-white'
+                                  key={selData?.id}
+                                  value={selData?.id}
+                                >
+                                  {selData?.name}
+                                </SelectItem>
+                              ))}
+                          </Select>
+                        ) : field.type === "select" ? (
                           <Select
                             isInvalid={
                               touched[field.name] && Boolean(errors[field.name])
