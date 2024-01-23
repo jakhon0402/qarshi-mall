@@ -17,7 +17,7 @@ import {
 } from "./data";
 import { getAllStoreCategories } from "../Categories/categoriesSlice";
 import CreateModal from "../../components/Modals/CreateModal";
-import { Button, Pagination } from "@nextui-org/react";
+import { Button, Pagination, Select, SelectItem } from "@nextui-org/react";
 import StoreCard from "../../components/Store/StoreCard";
 import EditModal from "../../components/Modals/EditModal";
 import DeleteModal from "../../components/Modals/DeleteModal";
@@ -25,6 +25,12 @@ import DeleteModal from "../../components/Modals/DeleteModal";
 const StoresPage = () => {
   const itemPerPage = 20;
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [value, setValue] = React.useState("");
+
+  const handleSelectionChange = (e) => {
+    console.log(e.target.value);
+    setValue(e.target.value);
+  };
   const { storeCategories } = useSelector((state) => state.categories);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -41,7 +47,27 @@ const StoresPage = () => {
         {stores && storeCategories && (
           <div className='flex flex-col gap-5 items-center'>
             <div className='flex flex-row w-full justify-between'>
-              <span></span>
+              <Select
+                radius='lg'
+                size='sm'
+                label='Kategoriya'
+                variant='bordered'
+                color='primary'
+                placeholder='Kategoriya tanlash'
+                selectedKeys={[value]}
+                className='max-w-[300px] text-black text-[16px]'
+                onChange={handleSelectionChange}
+              >
+                {storeCategories.map((ctg) => (
+                  <SelectItem
+                    key={ctg?.id}
+                    value={ctg?.id}
+                    className='text-black'
+                  >
+                    {ctg?.name}
+                  </SelectItem>
+                ))}
+              </Select>
               <CreateModal
                 // ctgs={categories}
                 handleSubmit={(reqBody) => {
@@ -60,8 +86,15 @@ const StoresPage = () => {
                 initialValues={emptyValues}
               />
             </div>
-            <div className='flex flex-row w-full gap-5'>
+            <div className='flex flex-row w-full gap-5 flex-wrap justify-around'>
               {stores
+                .filter((el) => {
+                  if (value === "") {
+                    return true;
+                  } else {
+                    return el?.categoryStore?.id === +value;
+                  }
+                })
                 .slice(
                   (currentPage - 1) * itemPerPage,
                   (currentPage - 1) * itemPerPage + itemPerPage

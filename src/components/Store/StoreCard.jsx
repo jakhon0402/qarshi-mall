@@ -56,6 +56,11 @@ const StoreCard = ({ store, editModal, deleteModal }) => {
               {store?.size + "m²"}
             </Chip>
           </div>
+          <div className='flex flex-row'>
+            <span className='text-[14px] font-normal text-black'>
+              {store?.categoryStore?.name}
+            </span>
+          </div>
         </div>
       </Card>
       <Modal
