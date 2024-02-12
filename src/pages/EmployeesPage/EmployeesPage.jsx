@@ -7,6 +7,7 @@ import {
   validationSchema,
   columns,
   INITIAL_VISIBLE_COLUMNS,
+  searchIndexes,
 } from "./data";
 import {
   createEmployee,
@@ -31,8 +32,16 @@ const EmployeesPage = () => {
         </span>
         {employees && (
           <ProTable
+            searchIndexes={searchIndexes}
             viewButtonUrl='/employees'
-            createSubmitHandler={(reqBody) => dispatch(createEmployee(reqBody))}
+            createSubmitHandler={(reqBody) =>
+              dispatch(
+                createEmployee({
+                  currentSalary: +reqBody?.currentSalary,
+                  ...reqBody,
+                })
+              )
+            }
             editSubmitHandler={(reqBody) => dispatch(updateEmployee(reqBody))}
             deleteSubmitHandler={(id) => dispatch(deleteEmployee({ id }))}
             columns={columns}

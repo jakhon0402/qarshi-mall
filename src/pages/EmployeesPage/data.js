@@ -38,36 +38,37 @@ export const fields = [
     label: "Kasbi",
     placeholder: "Kasbini kiriting...",
   },
-  {
-    name: "currentSalary",
-    isRequired: true,
-    type: "text",
-    label: "Boshlang'ich maosh",
-    placeholder: "Narxini kiriting...",
-  },
+  // {
+  //   name: "currentSalary",
+  //   isRequired: true,
+  //   type: "text",
+  //   label: "Joriy maosh",
+  //   placeholder: "Joriy maoshni kiriting...",
+  // },
 ];
 
 export const emptyValues = {
   name: "",
   surname: "",
-  currentSalary: 0,
+  // currentSalary: 0,
 };
 
 export const validationSchema = Yup.object().shape({
   name: Yup.string().required("Ismi bo'sh bo'lmasligi kerak!"),
   surname: Yup.string().required("Familiyasi bo'sh bo'lmasligi kerak!"),
-  currentSalary: Yup.string()
-    .matches(/^\d+$/, "Iltimos raqam kiriting!")
-    .required("Boshlang'ich bo'sh bo'lmasligi kerak!"),
+  // currentSalary: Yup.string()
+  //   .matches(/^\d+$/, "Iltimos raqam kiriting!")
+  //   .required("Joriy maosh bo'sh bo'lmasligi kerak!"),
 });
 
 export const columns = [
   { name: "ID", uid: "id", sortable: true },
+  { name: "Avatar", uid: "profilePhoto", sortable: true },
   { name: "Familiyasi", uid: "surname", sortable: true },
   { name: "Ismi", uid: "name", sortable: true },
   { name: "KASBI", uid: "jobDescription", sortable: true },
   { name: "MAOSH", uid: "currentSalary", sortable: true },
-  { name: "MAOSH BERILISH VAQTI", uid: "salaryDate", sortable: true },
+  // { name: "MAOSH BERILISH VAQTI", uid: "salaryDate", sortable: true },
 
   { name: "SANASI", uid: "createdAt" },
   // { name: "STATUS", uid: "status", sortable: true },
@@ -77,10 +78,19 @@ export const columns = [
 export const INITIAL_VISIBLE_COLUMNS = [
   "id",
   "name",
+  "profilePhoto",
   "surname",
   "currentSalary",
   "jobDescription",
   "salaryDate",
   "createdAt",
   "actions",
+];
+
+export const searchIndexes = [
+  "name",
+  "surname",
+  "currentSalary",
+  "jobDescription",
+  "salaryDate",
 ];

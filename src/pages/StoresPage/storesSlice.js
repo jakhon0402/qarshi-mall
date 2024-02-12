@@ -180,7 +180,7 @@ const storesSlice = createSlice({
       })
       .addCase(createStore.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.stores = [...state.stores, payload];
+        state.stores = [payload, ...state.stores];
       })
       .addCase(createStore.rejected, (state, action) => {
         state.loading = false;

@@ -73,9 +73,8 @@ export const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 export const searchIndexes = [
-  "fullName",
-  "storeNumber",
-  "contractNumber",
-  "fullAmount",
-  "initialPayment",
+  ["store", "fullName"],
+  ["store", "storeNumber"],
+  ["store", "contractNumber"],
+  "createdAt",
 ];

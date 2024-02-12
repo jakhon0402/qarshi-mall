@@ -36,7 +36,7 @@ const StoreCard = ({ store, editModal, deleteModal }) => {
       <Card
         onPress={onOpen}
         isPressable
-        className='flex flex-col w-[300px] bg-white border-[1px] border-neutral-300 rounded-3xl p-2'
+        className='flex flex-col w-full bg-white border-[1px] border-neutral-300 rounded-3xl p-2'
       >
         <img
           className='w-full h-[200px] object-cover rounded-2xl'

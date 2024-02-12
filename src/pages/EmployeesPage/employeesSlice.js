@@ -50,17 +50,149 @@ export const deleteEmployee = createAsyncThunk(
   }
 );
 
+export const createMonthlySalary = createAsyncThunk(
+  "employees/createMonthlySalary",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await Api.post(`/monthlySalary`, body?.data);
+      // body?.navigate();
+      return response.data;
+    } catch (err) {
+      if (!err.response) {
+        throw err;
+      }
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const updateMonthlySalary = createAsyncThunk(
+  "employees/updateMonthlySalary",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await Api.put(`/monthlySalary/${body?.id}`, body?.data);
+      // body?.navigate();
+      return response.data;
+    } catch (err) {
+      if (!err.response) {
+        throw err;
+      }
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const deleteMonthlySalary = createAsyncThunk(
+  "employees/deleteMonthlySalary",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await Api.delete(`/monthlySalary/${+body?.smId}`);
+      // body?.navigate();
+      return response.data;
+    } catch (err) {
+      if (!err.response) {
+        throw err;
+      }
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const createMonthlySalaryPayment = createAsyncThunk(
+  "employees/createMonthlySalaryPayment",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await Api.post(`/monthlySalaryPayment`, body?.data);
+      // body?.navigate();
+      return response.data;
+    } catch (err) {
+      if (!err.response) {
+        throw err;
+      }
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const updateMonthlySalaryPayment = createAsyncThunk(
+  "employees/updateMonthlySalaryPayment",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await Api.put(
+        `/monthlySalaryPayment/${body?.id}`,
+        body?.data
+      );
+      // body?.navigate();
+      return response.data;
+    } catch (err) {
+      if (!err.response) {
+        throw err;
+      }
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const deleteMonthlySalaryPayment = createAsyncThunk(
+  "employees/deleteMonthlySalaryPayment",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await Api.delete(
+        `/monthlySalaryPayment/${+body?.smpId}`
+      );
+      // body?.navigate();
+      return response.data;
+    } catch (err) {
+      if (!err.response) {
+        throw err;
+      }
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const uploadImage = createAsyncThunk(
+  "employees/uploadImage",
+  async (body, { rejectWithValue }) => {
+    const formData = new FormData();
+    formData.append("file", body?.file);
+    try {
+      const response = await Api.post("/fayl/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      let reqBody = { fileEntityId: response?.data?.id, ...body?.workerData };
+      const res = await Api.put(`/worker/${reqBody?.id}`, reqBody);
+
+      body?.removeSelection();
+      return res.data;
+    } catch (err) {
+      if (!err.response) {
+        throw err;
+      }
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 const employeesSlice = createSlice({
   name: "employees",
   initialState: {
     employees: null,
+    monthlySalaries: null,
+    salaryPayments: null,
     employee: null,
     loading: false,
+    uploadLoading: false,
     error: null,
   },
   reducers: {
     resetError: (state) => {
       state.error = null;
+    },
+    setSalaryPayments: (state, { payload }) => {
+      state.salaryPayments = payload;
     },
   },
   extraReducers: (builder) => {
@@ -85,9 +217,7 @@ const employeesSlice = createSlice({
       .addCase(getEmployee.fulfilled, (state, action) => {
         state.loading = false;
         state.employee = action.payload;
-        state.employee.salaryChanges.sort(
-          (a, b) => new Date(b.changeDate) - new Date(a.changeDate)
-        );
+        state.monthlySalaries = action.payload?.monthlySalaries;
       })
       .addCase(getEmployee.rejected, (state, action) => {
         state.loading = false;
@@ -153,10 +283,105 @@ const employeesSlice = createSlice({
       .addCase(updateEmployeeSalary.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      ///------------ CREATE store payment ------------------/////
+      .addCase(createMonthlySalary.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createMonthlySalary.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.monthlySalaries = [...state.monthlySalaries, payload];
+      })
+      .addCase(createMonthlySalary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ UPDATE store payment ------------------/////
+      .addCase(updateMonthlySalary.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateMonthlySalary.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        const ctgIndex = findIndex(state.monthlySalaries, { id: payload?.id });
+        state.monthlySalaries[ctgIndex] = payload;
+      })
+      .addCase(updateMonthlySalary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ delete payment ------------------/////
+      .addCase(deleteMonthlySalary.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteMonthlySalary.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        const ctgIndex = findIndex(state.monthlySalaries, { id: payload?.id });
+        state.monthlySalaries.splice(ctgIndex, 1);
+      })
+      .addCase(deleteMonthlySalary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ CREATE store payment ------------------/////
+      .addCase(createMonthlySalaryPayment.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createMonthlySalaryPayment.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.salaryPayments = [...state.salaryPayments, payload];
+      })
+      .addCase(createMonthlySalaryPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ UPDATE store payment ------------------/////
+      .addCase(updateMonthlySalaryPayment.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateMonthlySalaryPayment.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        const ctgIndex = findIndex(state.salaryPayments, { id: payload?.id });
+        state.salaryPayments[ctgIndex] = payload;
+      })
+      .addCase(updateMonthlySalaryPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ delete payment ------------------/////
+      .addCase(deleteMonthlySalaryPayment.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteMonthlySalaryPayment.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        const ctgIndex = findIndex(state.salaryPayments, { id: payload?.id });
+        state.salaryPayments.splice(ctgIndex, 1);
+      })
+      .addCase(deleteMonthlySalaryPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      ///------------ UPDATE stores ------------------/////
+      .addCase(uploadImage.pending, (state) => {
+        state.uploadLoading = true;
+      })
+      .addCase(uploadImage.fulfilled, (state, { payload }) => {
+        state.uploadLoading = false;
+        state.employee = payload;
+      })
+      .addCase(uploadImage.rejected, (state, action) => {
+        state.uploadLoading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { resetError } = employeesSlice.actions;
+export const { resetError, setSalaryPayments } = employeesSlice.actions;
 
 export default employeesSlice.reducer;

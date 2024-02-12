@@ -56,9 +56,8 @@ export const INITIAL_VISIBLE_COLUMNS_RENT = [
 ];
 
 export const searchIndexesRent = [
-  "fullName",
-  "storeNumber",
-  "contractNumber",
-  "fullAmount",
-  "initialPayment",
+  ["store", "fullName"],
+  ["store", "storeNumber"],
+  ["store", "contractNumber"],
+  "createdAt",
 ];

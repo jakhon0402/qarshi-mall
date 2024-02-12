@@ -13,6 +13,7 @@ import {
   columns,
   emptyValues,
   fields,
+  searchIndexes,
   validationSchema,
 } from "./data/saleStore";
 import ProTable from "../../components/ProTable";
@@ -27,6 +28,7 @@ import {
   columnsRent,
   emptyValuesRent,
   fieldsRent,
+  searchIndexesRent,
   validationSchemaRent,
 } from "./data/rentStore";
 
@@ -70,6 +72,7 @@ const AgreementsPage = () => {
           {stores && selected === "sale" && saleStores && (
             <ProTable
               tableName='Sotuv'
+              searchIndexes={searchIndexes}
               viewButtonUrl='/agreements/sale'
               createSubmitHandler={(reqBody) =>
                 dispatch(createSaleStore(reqBody))
@@ -109,6 +112,7 @@ const AgreementsPage = () => {
           {stores && selected === "rent" && rentStores && (
             <ProTable
               tableName='Arenda'
+              searchIndexes={searchIndexesRent}
               viewButtonUrl='/agreements/rent'
               createSubmitHandler={(reqBody) =>
                 dispatch(createRentStore(reqBody))

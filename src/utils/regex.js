@@ -1,4 +1,7 @@
 export const getMoneyPattern = (val, splitBy = " ") => {
+  if (val === null) {
+    return "0";
+  }
   // if (val) {
   return String(val).replace(/\B(?=(\d{3})+(?!\d))/g, splitBy);
   // }

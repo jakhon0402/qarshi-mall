@@ -18,8 +18,9 @@ import {
   Pagination,
   Select,
   CircularProgress,
+  Avatar,
 } from "@nextui-org/react";
-import { capitalize } from "../utils/utils";
+import { capitalize, getStoreImage } from "../utils/utils";
 import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
@@ -43,6 +44,7 @@ const statusColorMap = {
   vacation: "warning",
 };
 const ProTable = ({
+  isCreatable = true,
   isSearch = true,
   tableName = "Ma'lumot",
   createData,
@@ -55,6 +57,7 @@ const ProTable = ({
   editSubmitHandler,
   deleteSubmitHandler,
   viewButtonUrl,
+  extraButton,
   searchIndexes = ["name"],
 }) => {
   const navigate = useNavigate();
@@ -157,6 +160,21 @@ const ProTable = ({
               {user.team}
             </p>
           </div>
+        );
+
+      case "profilePhoto":
+        return (
+          <Avatar
+            color='primary'
+            className='w-[40px] h-[40px]'
+            // isBordered
+            src={getStoreImage(user?.fileEntity)}
+
+            // size='sm'
+            // name={`${employee?.name} ${employee?.surname}`}
+            // description={employee?.jobDescription}
+            // description="Product Designer"
+          />
         );
 
       case "attachment.id":
@@ -277,6 +295,16 @@ const ProTable = ({
         );
       }
 
+      case "month": {
+        return (
+          <div className='flex flex-col'>
+            <p className='text-bold text-small capitalize'>
+              {date.format(new Date(cellValue * 1000), "MMM DD YYYY")}
+            </p>
+          </div>
+        );
+      }
+
       case "toDate":
       case "fromDate": {
         return (
@@ -308,6 +336,7 @@ const ProTable = ({
 
         return (
           <div className='relative flex items-center gap-5'>
+            {extraButton && extraButton(user)}
             {viewButtonUrl && (
               <button
                 onClick={() => navigate(`${viewButtonUrl}/${user?.id}`)}
@@ -316,29 +345,33 @@ const ProTable = ({
                 <EyeIcon className='w-[18px] text-green-500' />
               </button>
             )}
-            <EditModal
-              ctgs={categories}
-              handlerSubmit={(body) => editSubmitHandler(body)}
-              fields={editData?.fields}
-              validationSchema={editData?.validationSchema}
-              initialValues={
-                editData?.initialValues(user)
-                // location.pathname.startsWith("/inventory")
-                //   ? {
-                //       fileEntityId: user?.fileEntity?.id,
-                //       name: user?.name,
-                //       price: user?.price,
-                //       count: user?.count,
-                //       description: user?.description,
-                //     }
-                //   : user
-              }
-            />
+            {editData && (
+              <EditModal
+                ctgs={categories}
+                handlerSubmit={(body) => editSubmitHandler(body)}
+                fields={editData?.fields}
+                validationSchema={editData?.validationSchema}
+                initialValues={
+                  editData?.initialValues(user)
+                  // location.pathname.startsWith("/inventory")
+                  //   ? {
+                  //       fileEntityId: user?.fileEntity?.id,
+                  //       name: user?.name,
+                  //       price: user?.price,
+                  //       count: user?.count,
+                  //       description: user?.description,
+                  //     }
+                  //   : user
+                }
+              />
+            )}
 
-            <DeleteModal
-              contextText={user?.name ? user?.name : tableName}
-              handleSubmit={() => deleteSubmitHandler(user?.id)}
-            />
+            {deleteSubmitHandler && (
+              <DeleteModal
+                contextText={user?.name ? user?.name : tableName}
+                handleSubmit={() => deleteSubmitHandler(user?.id)}
+              />
+            )}
           </div>
           //   <div className='relative flex justify-end items-center gap-2'>
           //     <Dropdown>
@@ -467,14 +500,16 @@ const ProTable = ({
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <CreateModal
-              ctgs={categories}
-              handleSubmit={createSubmitHandler}
-              btnText={`${tableName} qo'shish`}
-              fields={createData?.fields}
-              validationSchema={createData?.validationSchema}
-              initialValues={createData?.initialValues}
-            />
+            {isCreatable && (
+              <CreateModal
+                ctgs={categories}
+                handleSubmit={createSubmitHandler}
+                btnText={`${tableName} qo'shish`}
+                fields={createData?.fields}
+                validationSchema={createData?.validationSchema}
+                initialValues={createData?.initialValues}
+              />
+            )}
           </div>
         </div>
         {/* <div className='flex justify-between items-center'>
