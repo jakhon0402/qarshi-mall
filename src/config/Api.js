@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const Api = axios.create({
-  // baseURL: "https://sakiyna-app.onrender.com/api/v1",
-  baseURL: "http://localhost:8086/api", // Replace with your API URL
+  baseURL: "https://api.qarshimall.uz/api",
+  // baseURL: "http://localhost:8086/api",
 
   headers: {
     "Content-Type": "application/json",

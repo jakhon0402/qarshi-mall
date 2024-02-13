@@ -3,7 +3,8 @@ export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const IMAGE_BASE_URL = "http://localhost:8086/api/fayl/download/";
+// const IMAGE_BASE_URL = "http://localhost:8086/api/fayl/download/";
+const IMAGE_BASE_URL = "https://api.qarshimall.uz/api/fayl/download/";
 
 export const getStoreImage = (fileEntity) => {
   return fileEntity !== null && fileEntity?.id
