@@ -99,7 +99,6 @@ const StatisticsPage = () => {
 
   useEffect(() => {
     if (data1 && data2 && labels) {
-      console.log(setChartDatas(labels, data1, data2));
       setDatas(setChartDatas(Array.from(labels), data1, data2));
     }
   }, [data1, data2, labels]);
@@ -139,8 +138,6 @@ const StatisticsPage = () => {
         data2.push(0);
       }
     });
-
-    console.log(data1, data2);
 
     setData2([...data2]);
 
