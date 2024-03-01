@@ -143,7 +143,7 @@ const ProTable = ({
     switch (columnKey) {
       case "name":
         return (
-          <span className='font-bold text-[14px]'>{cellValue}</span>
+          <span className='text-[14px] font-bold'>{cellValue}</span>
           //   <User
           //     avatarProps={{ radius: "lg", src: user.avatar }}
           //     description={user.email}
@@ -156,7 +156,7 @@ const ProTable = ({
         return (
           <div className='flex flex-col'>
             <p className='text-bold text-small capitalize'>{cellValue}</p>
-            <p className='text-bold text-tiny capitalize text-default-400'>
+            <p className='text-bold text-tiny text-default-400 capitalize'>
               {user.team}
             </p>
           </div>
@@ -166,7 +166,7 @@ const ProTable = ({
         return (
           <Avatar
             color='primary'
-            className='w-[40px] h-[40px]'
+            className='h-[40px] w-[40px]'
             // isBordered
             src={getStoreImage(user?.fileEntity)}
 
@@ -211,7 +211,7 @@ const ProTable = ({
       case "paymentAmount":
       case "paidAmount":
         return (
-          <div className='flex flex-col font-space'>
+          <div className='font-space flex flex-col'>
             <span
               style={{
                 opacity:
@@ -232,7 +232,7 @@ const ProTable = ({
 
       case "debtAmount":
         return (
-          <div className='flex flex-col font-space'>
+          <div className='font-space flex flex-col'>
             <span
               style={{
                 opacity: user?.paymentAmount - user?.paidAmount == 0 ? 0.5 : 1,
@@ -305,12 +305,21 @@ const ProTable = ({
         );
       }
 
+      case "image": {
+        return (
+          <img
+            src={getStoreImage(user?.fileEntity)}
+            className='w-[50px] h-[50px] object-cover bg-contain bg-no-repeat'
+          />
+        );
+      }
+
       case "toDate":
       case "fromDate": {
         return (
-          <div className='flex flex-col items-center w-fit'>
-            <p className='text-bold capitalize text-[12px]'>
-              {date.format(new Date(cellValue), "ddd, MMM DD YYYY")}
+          <div className='flex w-fit flex-col items-center'>
+            <p className='text-bold text-[12px] capitalize'>
+              {date.format(new Date(cellValue * 1000), "ddd, MMM DD YYYY")}
             </p>
           </div>
         );
@@ -340,7 +349,7 @@ const ProTable = ({
             {viewButtonUrl && (
               <button
                 onClick={() => navigate(`${viewButtonUrl}/${user?.id}`)}
-                className='text-lg text-default-400 cursor-pointer active:opacity-50'
+                className='text-default-400 cursor-pointer text-lg active:opacity-50'
               >
                 <EyeIcon className='w-[18px] text-green-500' />
               </button>
@@ -428,7 +437,7 @@ const ProTable = ({
   const topContent = React.useMemo(() => {
     return (
       <div className='flex flex-col gap-4'>
-        <div className='flex justify-between gap-3 items-end'>
+        <div className='flex items-end justify-between gap-3'>
           {isSearch ? (
             <Input
               isClearable
@@ -444,7 +453,7 @@ const ProTable = ({
               {tableName + "lar jadvali"}
             </span>
           )}
-          <div className='flex gap-3 z-0'>
+          <div className='z-0 flex gap-3'>
             {isFilterCtg && (
               <Dropdown>
                 <DropdownTrigger className='hidden sm:flex'>
@@ -542,8 +551,8 @@ const ProTable = ({
 
   const bottomContent = React.useMemo(() => {
     return (
-      <div className='py-2 px-2 flex justify-between items-center'>
-        <span className='w-[30%] text-small text-default-400'>
+      <div className='flex items-center justify-between px-2 py-2'>
+        <span className='text-small text-default-400 w-[30%]'>
           {/* {selectedKeys === "all"
             ? "All items selected"
             : `${selectedKeys.size} of ${filteredItems.length} selected`} */}
@@ -557,7 +566,7 @@ const ProTable = ({
           total={pages}
           onChange={setPage}
         />
-        <div className='hidden sm:flex w-[30%] justify-end gap-2'>
+        <div className='hidden w-[30%] justify-end gap-2 sm:flex'>
           <Button
             isDisabled={pages === 1}
             size='sm'

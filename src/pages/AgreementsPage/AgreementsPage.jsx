@@ -75,10 +75,14 @@ const AgreementsPage = () => {
               searchIndexes={searchIndexes}
               viewButtonUrl='/agreements/sale'
               createSubmitHandler={(reqBody) =>
-                dispatch(createSaleStore(reqBody))
+                dispatch(
+                  createSaleStore({ ...reqBody, storeId: +reqBody?.storeId })
+                )
               }
               editSubmitHandler={(reqBody) =>
-                dispatch(updateSaleStore(reqBody))
+                dispatch(
+                  updateSaleStore({ reqBody, storeId: +reqBody?.storeId })
+                )
               }
               deleteSubmitHandler={(id) => dispatch(deleteSaleStore({ id }))}
               columns={columns}
@@ -102,7 +106,7 @@ const AgreementsPage = () => {
               editData={{
                 fields,
                 initialValues: (data) => ({
-                  storeId: data?.store?.id + "",
+                  storeId: +data?.store?.id,
                   ...data,
                 }),
                 validationSchema,

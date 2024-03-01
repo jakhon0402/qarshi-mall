@@ -13,6 +13,8 @@ import StorePage from "../StoresPage/StorePage/StorePage";
 import AgreementsPage from "../AgreementsPage/AgreementsPage";
 import RentStorePage from "../AgreementsPage/RentStorePage/RentStorePage";
 import SaleStorePage from "../AgreementsPage/SaleStorePage/SaleStorePage";
+import AdsPage from "../AdsPage/AdsPage";
+import AdsItemPage from "../AdsPage/AdsItemPage/AdsItemPage";
 
 const DashboardPage = () => {
   return (
@@ -23,6 +25,8 @@ const DashboardPage = () => {
         <div className='grow flex flex-col w-[500px] bg-neutral-100 overflow-y-scroll h-[calc(100vh_-_0px)]'>
           {" "}
           <Routes>
+            <Route path='/ads' element={<AdsPage />} />
+            <Route path='/ads/:id' element={<AdsItemPage />} />
             <Route path='/incomes' element={<IncomesPage />} />
             <Route path='/outgoings' element={<OutgoingsPage />} />
             <Route path='/statistics' element={<StatisticsPage />} />

@@ -7,6 +7,7 @@ import employeeReducer from "../pages/EmployeesPage/employeesSlice";
 import saleStoreReducer from "../pages/AgreementsPage/saleStoresSlice";
 import rentStoreReducer from "../pages/AgreementsPage/rentStoreSlice";
 import storeReducer from "../pages/StoresPage/storesSlice";
+import adsItemReducer from "../pages/AdsPage/adsItemsSlice";
 
 export default configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export default configureStore({
     saleStores: saleStoreReducer,
     rentStores: rentStoreReducer,
     stores: storeReducer,
+    adsItems: adsItemReducer,
     // inventory: inventoryReducer,
   },
 });
