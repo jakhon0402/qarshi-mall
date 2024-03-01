@@ -319,7 +319,7 @@ const ProTable = ({
         return (
           <div className='flex w-fit flex-col items-center'>
             <p className='text-bold text-[12px] capitalize'>
-              {date.format(new Date(cellValue * 1000), "ddd, MMM DD YYYY")}
+              {date.format(new Date(cellValue), "ddd, MMM DD YYYY")}
             </p>
           </div>
         );
